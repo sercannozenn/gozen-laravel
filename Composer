@@ -1,0 +1,13 @@
+Composer Nedir?
+
+-> Web tabanlı bir PHP bağımlılık yöneticisidir.
+-> Başka geliştiriciler tarafından oluşturulan kod parçacıkları, framework'ler, kütüphaneler ve diğer bileşenler
+   composer da barınabilir.
+-> Kullanılan bağımlılıkların sürüm gereksinimlerini belirtmenize ve bunları indirip kurmanıza olanak tanır.
+-> Bağımlılıkları otomatik olarak çözerek güncellemeleri bizim için yönetir.
+-> Paketleri Packagist adlı merkezi bir depodan indirir.
+
+.Net       => NuGet
+Java       => Apache Maven veya Gradle
+Ios        => CocoaPods
+Javascript => Npm

@@ -1,0 +1,92 @@
+version: "3.9"
+
+services:
+  php8:
+    build:
+      context: ./docker/php8
+    hostname: php8
+    ports:
+      - "10004:9000"
+    volumes:
+      - ./projects/:/var/www/html/
+      - ./docker/php8/www.conf:/usr/local/etc/php-fpm.d/www.conf
+      - ./docker/php8/php.ini:/usr/local/etc/php/php.ini
+    environment:
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - backend
+  php8.2:
+    build:
+      context: ./docker/php8.2
+    hostname: php8.2
+    ports:
+      - "10005:9000"
+    volumes:
+      - ./projects/:/var/www/html/
+      - ./docker/php8.2/www.conf:/usr/local/etc/php-fpm.d/www.conf
+      - ./docker/php8.2/php.ini:/usr/local/etc/php/php.ini
+    environment:
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - backend
+  nginx:
+    platform: linux/x86_64
+    image: nginx:1.13.8
+    ports:
+      - "80:80"
+      - "8000:8000"
+      - "8888:8888"
+    volumes:
+      - ./projects/:/var/www/html/
+      -  ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php8
+      - php8.2
+    networks:
+      - backend
+  mysql:
+    platform: linux/x86_64
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./docker/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - backend
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    environment:
+      PMA_HOST: mysql
+      #PMA_USER: root
+      #PMA_PASSWORD: "12345678"
+    depends_on:
+      - mysql
+    ports:
+      - "8080:80"
+    networks:
+      - backend
+  redis:
+    image: arm64v8/redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./docker/redis:/data
+    networks:
+      - backend
+  redisui:
+    image: patrikx3/p3x-redis-ui:latest
+    ports:
+      - "7843:7843"
+    volumes:
+      - ./docker/p3x-redis-ui-settings:/settings
+    networks:
+      - backend
+networks:
+  backend:
+    driver: bridge
